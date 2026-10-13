@@ -24,10 +24,10 @@
             <p class="text-sm text-amber-100 mb-2">No. 20, Kandan Street, Perambur, Chennai – 600011</p>
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">FAMILY DATABASE FORM</h1>
             
-            <!-- View Records Button (No Print) -->
+            <!-- Protected Admin Button (No Print) -->
             <div class="absolute top-4 right-4 no-print flex gap-2">
                 <button onclick="openDatabaseModal()" class="bg-white/10 hover:bg-white/25 text-white text-xs font-medium py-2 px-3 rounded-lg border border-white/20 transition flex items-center gap-1 shadow-sm">
-                    📂 View Submissions (<span id="submissionCount">0</span>)
+                    🔒 Admin: View Submissions
                 </button>
             </div>
         </div>
@@ -154,7 +154,7 @@
     <div id="databaseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
             <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
-                <h3 class="text-lg font-bold">Saved Family Submissions</h3>
+                <h3 class="text-lg font-bold">Saved Family Submissions (Admin Panel)</h3>
                 <button onclick="closeDatabaseModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
             
@@ -175,6 +175,9 @@
     </div>
 
     <script>
+        // --- CONFIGURABLE ADMIN PASSWORD ---
+        const ADMIN_PASSWORD = "admin123"; // Change this to your preferred secure password
+
         // Set today's date automatically
         document.getElementById('formDate').valueAsDate = new Date();
         document.getElementById('signDate').valueAsDate = new Date();
@@ -219,12 +222,6 @@
             return JSON.parse(localStorage.getItem('sangh_family_database') || '[]');
         }
 
-        function updateSubmissionCount() {
-            const records = getStoredRecords();
-            document.getElementById('submissionCount').textContent = records.length;
-        }
-        updateSubmissionCount();
-
         function handleFormSubmit(e) {
             e.preventDefault();
 
@@ -267,7 +264,6 @@
             records.push(formData);
             localStorage.setItem('sangh_family_database', JSON.stringify(records));
 
-            updateSubmissionCount();
             alert('Family database record saved successfully!');
             resetForm();
         }
@@ -279,8 +275,16 @@
             updateMemberCount();
         }
 
-        // Modal Controls
+        // Secure Modal Controls with Password Prompt
         function openDatabaseModal() {
+            const enteredPassword = prompt("Enter Admin Password to access submissions:");
+            if (enteredPassword === null) return; // User clicked Cancel
+            
+            if (enteredPassword !== ADMIN_PASSWORD) {
+                alert("Incorrect password! Access denied.");
+                return;
+            }
+
             renderRecordsList(getStoredRecords());
             document.getElementById('databaseModal').classList.remove('hidden');
         }
@@ -327,7 +331,6 @@
                 let records = getStoredRecords();
                 records = records.filter(r => r.id !== id);
                 localStorage.setItem('sangh_family_database', JSON.stringify(records));
-                updateSubmissionCount();
                 renderRecordsList(records);
             }
         }
@@ -337,7 +340,6 @@
             const rec = records.find(r => r.id === id);
             if (!rec) return;
 
-            // Populate form temporarily for printing/viewing
             document.getElementById('familyHead').value = rec.familyHead;
             document.getElementById('fathersName').value = rec.fathersName;
             document.getElementById('address').value = rec.address;
