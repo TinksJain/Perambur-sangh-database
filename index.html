@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree S S Jain Sangh - Family Database</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            body { background: white; }
+            .no-print { display: none !important; }
+            .print-container { box-shadow: none; border: none; margin: 0; padding: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl overflow-hidden print-container border border-slate-200">
+        
+        <!-- Header Banner -->
+        <div class="bg-gradient-to-r from-amber-700 to-amber-900 text-white py-6 px-8 text-center relative">
+            <h2 class="text-xs tracking-widest uppercase font-semibold text-amber-200 mb-1">Shree S S Jain Sangh</h2>
+            <p class="text-sm text-amber-100 mb-2">No. 20, Kandan Street, Perambur, Chennai – 600011</p>
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">FAMILY DATABASE FORM</h1>
+            
+            <!-- View Records Button (No Print) -->
+            <div class="absolute top-4 right-4 no-print flex gap-2">
+                <button onclick="openDatabaseModal()" class="bg-white/10 hover:bg-white/25 text-white text-xs font-medium py-2 px-3 rounded-lg border border-white/20 transition flex items-center gap-1 shadow-sm">
+                    📂 View Submissions (<span id="submissionCount">0</span>)
+                </button>
+            </div>
+        </div>
+
+        <!-- Form Body -->
+        <form id="familyForm" onsubmit="handleFormSubmit(event)" class="p-6 sm:p-10 space-y-8">
+            
+            <!-- Family Head Information Section -->
+            <div class="bg-amber-50/50 rounded-xl p-6 border border-amber-100 shadow-sm space-y-4">
+                <h3 class="text-lg font-semibold text-amber-900 border-b border-amber-200 pb-2">Head of Family Details</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Family Head / Name *</label>
+                        <input type="text" id="familyHead" required class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Father's Name *</label>
+                        <input type="text" id="fathersName" required class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Residential Address *</label>
+                    <textarea id="address" rows="2" required class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Native Place</label>
+                        <input type="text" id="nativePlace" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Mobile No. *</label>
+                        <input type="tel" id="mobileNo" required pattern="[0-9]{10}" placeholder="10-digit mobile no" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Date *</label>
+                        <input type="date" id="formDate" required class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Occupation</label>
+                        <input type="text" id="occupation" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1">Occupation / Business Address</label>
+                        <input type="text" id="businessAddress" class="w-full bg-white border border-slate-300 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Members Details Section (Up to 10) -->
+            <div class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-semibold text-slate-800">Family Members Details</h3>
+                        <p class="text-xs text-slate-500">Provide details of family members (up to 10 members)[cite: 1].</p>
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">Total Members: <span id="memberCountDisplay">0</span></span>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-xl shadow-sm">
+                    <table class="w-full text-left border-collapse min-w-[700px]">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-xs uppercase tracking-wider border-b border-slate-200">
+                                <th class="p-3 text-center w-12">S.No</th>
+                                <th class="p-3">Member's Full Name</th>
+                                <th class="p-3 w-32">S/O, W/O, D/O</th>
+                                <th class="p-3 w-20 text-center">Age</th>
+                                <th class="p-3 w-28">Sex</th>
+                                <th class="p-3">Occupation (if applicable)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="membersTableBody" class="divide-y divide-slate-200 text-sm">
+                            <!-- Rows generated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Declaration & Signatures -->
+            <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-4">
+                <p class="text-xs text-slate-600 italic">
+                    <strong>Declaration:</strong> The above information is true to the best of my knowledge[cite: 1].
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200 text-xs text-slate-600">
+                    <div>
+                        <label class="block font-bold mb-1">Signature of Family Head[cite: 1]</label>
+                        <input type="text" id="signatureName" placeholder="Type full name as signature" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-sm">
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-1">
+                            <label class="block font-bold mb-1">Contact No.[cite: 1]</label>
+                            <input type="text" id="contactNoCheck" placeholder="Contact number" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-sm">
+                        </div>
+                        <div class="w-36">
+                            <label class="block font-bold mb-1">Date[cite: 1]</label>
+                            <input type="date" id="signDate" class="w-full bg-white border border-slate-300 rounded px-2.5 py-1.5 text-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="flex flex-wrap items-center justify-end gap-3 pt-4 no-print">
+                <button type="button" onclick="resetForm()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-sm font-medium transition">
+                    Clear Form
+                </button>
+                <button type="button" onclick="window.print()" class="px-5 py-2.5 rounded-xl border border-amber-600 text-amber-700 hover:bg-amber-50 text-sm font-medium transition flex items-center gap-2">
+                    🖨️ Print / Save PDF
+                </button>
+                <button type="submit" class="px-6 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white text-sm font-semibold shadow-lg shadow-amber-700/20 transition">
+                    💾 Save Family Record
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Modal for Viewing Submissions -->
+    <div id="databaseModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-6 bg-slate-900 text-white flex justify-between items-center">
+                <h3 class="text-lg font-bold">Saved Family Submissions</h3>
+                <button onclick="closeDatabaseModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="p-4 bg-slate-100 flex justify-between items-center border-b border-slate-200">
+                <input type="text" id="searchInput" oninput="filterRecords()" placeholder="Search by family head or mobile..." class="bg-white border border-slate-300 rounded-lg px-3 py-1.5 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <div class="flex gap-2">
+                    <button onclick="exportJSON()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-3 py-2 rounded-lg font-medium transition">Export JSON</button>
+                    <button onclick="exportCSV()" class="bg-amber-700 hover:bg-amber-800 text-white text-xs px-3 py-2 rounded-lg font-medium transition">Export CSV</button>
+                </div>
+            </div>
+
+            <div class="p-6 overflow-y-auto flex-1">
+                <div id="recordsList" class="space-y-4">
+                    <!-- Loaded dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set today's date automatically
+        document.getElementById('formDate').valueAsDate = new Date();
+        document.getElementById('signDate').valueAsDate = new Date();
+
+        // Generate 10 family member rows
+        const tableBody = document.getElementById('membersTableBody');
+        for (let i = 1; i <= 10; i++) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-3 text-center font-medium text-slate-500">${i}</td>
+                <td class="p-3"><input type="text" data-field="name" class="member-input w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-sm focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none"></td>
+                <td class="p-3"><input type="text" data-field="relation" placeholder="S/W/D of" class="member-input w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-sm focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none"></td>
+                <td class="p-3"><input type="number" data-field="age" min="0" max="120" class="member-input w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-sm text-center focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none"></td>
+                <td class="p-3">
+                    <select data-field="sex" class="member-input w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-sm focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none">
+                        <option value="">Select</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </td>
+                <td class="p-3"><input type="text" data-field="occupation" class="member-input w-full bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-sm focus:bg-white focus:ring-1 focus:ring-amber-500 focus:outline-none"></td>
+            `;
+            tableBody.appendChild(tr);
+        }
+
+        // Live calculation of filled members
+        function updateMemberCount() {
+            const rows = tableBody.querySelectorAll('tr');
+            let count = 0;
+            rows.forEach(row => {
+                const nameInput = row.querySelector('[data-field="name"]');
+                if (nameInput.value.trim() !== '') count++;
+            });
+            document.getElementById('memberCountDisplay').textContent = count;
+        }
+
+        tableBody.addEventListener('input', updateMemberCount);
+
+        // Local Storage Management
+        function getStoredRecords() {
+            return JSON.parse(localStorage.getItem('sangh_family_database') || '[]');
+        }
+
+        function updateSubmissionCount() {
+            const records = getStoredRecords();
+            document.getElementById('submissionCount').textContent = records.length;
+        }
+        updateSubmissionCount();
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+
+            // Collect member details
+            const members = [];
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, idx) => {
+                const name = row.querySelector('[data-field="name"]').value.trim();
+                if (name) {
+                    members.push({
+                        sNo: idx + 1,
+                        name: name,
+                        relation: row.querySelector('[data-field="relation"]').value.trim(),
+                        age: row.querySelector('[data-field="age"]').value.trim(),
+                        sex: row.querySelector('[data-field="sex"]').value,
+                        occupation: row.querySelector('[data-field="occupation"]').value.trim()
+                    });
+                }
+            });
+
+            const formData = {
+                id: 'FAMILY_' + Date.now(),
+                familyHead: document.getElementById('familyHead').value.trim(),
+                fathersName: document.getElementById('fathersName').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                nativePlace: document.getElementById('nativePlace').value.trim(),
+                mobileNo: document.getElementById('mobileNo').value.trim(),
+                formDate: document.getElementById('formDate').value,
+                occupation: document.getElementById('occupation').value.trim(),
+                businessAddress: document.getElementById('businessAddress').value.trim(),
+                totalMembers: members.length,
+                members: members,
+                signature: document.getElementById('signatureName').value.trim(),
+                contactNoCheck: document.getElementById('contactNoCheck').value.trim(),
+                signDate: document.getElementById('signDate').value,
+                submittedAt: new Date().toISOString()
+            };
+
+            const records = getStoredRecords();
+            records.push(formData);
+            localStorage.setItem('sangh_family_database', JSON.stringify(records));
+
+            updateSubmissionCount();
+            alert('Family database record saved successfully!');
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('familyForm').reset();
+            document.getElementById('formDate').valueAsDate = new Date();
+            document.getElementById('signDate').valueAsDate = new Date();
+            updateMemberCount();
+        }
+
+        // Modal Controls
+        function openDatabaseModal() {
+            renderRecordsList(getStoredRecords());
+            document.getElementById('databaseModal').classList.remove('hidden');
+        }
+
+        function closeDatabaseModal() {
+            document.getElementById('databaseModal').classList.add('hidden');
+        }
+
+        function renderRecordsList(records) {
+            const container = document.getElementById('recordsList');
+            if (records.length === 0) {
+                container.innerHTML = `<p class="text-center text-slate-500 py-8">No family records saved yet.</p>`;
+                return;
+            }
+
+            container.innerHTML = records.map((rec) => `
+                <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="font-bold text-amber-900 text-base">${rec.familyHead} (Father: ${rec.fathersName})</h4>
+                        <p class="text-xs text-slate-500">Mobile: ${rec.mobileNo} | Total Members: ${rec.totalMembers} | Date: ${rec.formDate}</p>
+                        <p class="text-xs text-slate-600 mt-1 line-clamp-1">Address: ${rec.address}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="viewRecordDetails('${rec.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-1.5 rounded-lg font-medium transition">View</button>
+                        <button onclick="deleteRecord('${rec.id}')" class="bg-red-50 hover:bg-red-100 text-red-600 text-xs px-3 py-1.5 rounded-lg font-medium transition">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterRecords() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const records = getStoredRecords();
+            const filtered = records.filter(r => 
+                r.familyHead.toLowerCase().includes(query) || 
+                r.mobileNo.includes(query) ||
+                r.fathersName.toLowerCase().includes(query)
+            );
+            renderRecordsList(filtered);
+        }
+
+        function deleteRecord(id) {
+            if (confirm('Are you sure you want to delete this family record?')) {
+                let records = getStoredRecords();
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('sangh_family_database', JSON.stringify(records));
+                updateSubmissionCount();
+                renderRecordsList(records);
+            }
+        }
+
+        function viewRecordDetails(id) {
+            const records = getStoredRecords();
+            const rec = records.find(r => r.id === id);
+            if (!rec) return;
+
+            // Populate form temporarily for printing/viewing
+            document.getElementById('familyHead').value = rec.familyHead;
+            document.getElementById('fathersName').value = rec.fathersName;
+            document.getElementById('address').value = rec.address;
+            document.getElementById('nativePlace').value = rec.nativePlace;
+            document.getElementById('mobileNo').value = rec.mobileNo;
+            document.getElementById('formDate').value = rec.formDate;
+            document.getElementById('occupation').value = rec.occupation;
+            document.getElementById('businessAddress').value = rec.businessAddress;
+            document.getElementById('signatureName').value = rec.signature;
+            document.getElementById('contactNoCheck').value = rec.contactNoCheck;
+            document.getElementById('signDate').value = rec.signDate;
+
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row, idx) => {
+                const member = rec.members[idx] || {};
+                row.querySelector('[data-field="name"]').value = member.name || '';
+                row.querySelector('[data-field="relation"]').value = member.relation || '';
+                row.querySelector('[data-field="age"]').value = member.age || '';
+                row.querySelector('[data-field="sex"]').value = member.sex || '';
+                row.querySelector('[data-field="occupation"]').value = member.occupation || '';
+            });
+
+            updateMemberCount();
+            closeDatabaseModal();
+        }
+
+        function exportJSON() {
+            const records = getStoredRecords();
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(records, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", "sangh_family_database.json");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function exportCSV() {
+            const records = getStoredRecords();
+            if (records.length === 0) {
+                alert("No records to export.");
+                return;
+            }
+
+            let csv = "Family Head,Father's Name,Mobile,Native Place,Address,Total Members,Form Date,Occupation\n";
+            records.forEach(r => {
+                csv += `"${r.familyHead}","${r.fathersName}","${r.mobileNo}","${r.nativePlace}","${r.address}",${r.totalMembers},"${r.formDate}","${r.occupation}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", url);
+            dlAnchor.setAttribute("download", "sangh_family_database.csv");
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+    </script>
+</body>
+</html>
